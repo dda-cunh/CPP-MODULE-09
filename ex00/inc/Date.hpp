@@ -41,4 +41,5 @@ class Date
 std::ostream &			operator<<(std::ostream &, Date const&);
 
 std::string::size_type	charCount(char const&, std::string const&);
+std::string				sTrim(const std::string& str);
 bool					isNum(char const& c);

@@ -1,5 +1,5 @@
 .SILENT:
-NAME		= 	Span
+NAME		= 	btc
 
 CC 			= 	c++
 
@@ -27,6 +27,8 @@ GREEN		= 	\033[0;32m
 RESET		=	\033[0m
 
 SUS			=	\U00000D9E
+
+INPUT_PATH	=	infile
 
 HAMMER		=	\U0001F528
 
@@ -56,7 +58,11 @@ fclean:			clean
 re:				fclean	all
 
 run:			all
-				valgrind  $(VAL_FLAGS) ./$(NAME)
+				valgrind  $(VAL_FLAGS) ./$(NAME) $(INPUT_PATH)
+
+rerun:
+				make re
+				make run
 
 done:
 				clear

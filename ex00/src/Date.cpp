@@ -33,22 +33,23 @@ Date::~Date(void)
 //-----------------------------  CONSTRUCTORS  ----------------------------//
 /*	std::string constructor expects format:
  *	yyyy-mm-dd
- *	
+ *	Left and right std::isspace will be trimmed
  */
 Date::Date(std::string const& str)
 {
-	std::string	const	verbose = "Error: bad date => " + str;
+	std::string	const	trimmed = sTrim(str);
+	std::string	const	verbose = "Error: bad date => " + trimmed;
 
-	std::stringstream	ss(str);
+	std::stringstream	ss(trimmed);
 	std::string			number_s;
 	long				numbers[3];
 	char				*end_ptr;
 	int					numbers_i;
 
 	numbers_i = 0;
-	if (charCount('-', str) != 2)
+	if (charCount('-', trimmed) != 2)
 		throw (ExceptionMaker(verbose));
-	if (!isNum(*str.begin()) || !isNum(*str.rbegin()))
+	if (!isNum(*trimmed.begin()) || !isNum(*trimmed.rbegin()))
 		throw (ExceptionMaker(verbose));
 	while(std::getline(ss, number_s, '-'))
 	{
@@ -76,7 +77,6 @@ Date::Date(DateInfo const& date)
 	}
 }
 //-------------------------------------------------------------------------//
-
 
 //-----------------------------  OP OVERLOADS  ----------------------------//
 bool	Date::operator==(Date const & rhs)	const
@@ -177,5 +177,19 @@ std::string::size_type	charCount(char const& c, std::string const& s)
 			count++;
 	}
 	return (count);
+}
+
+std::string sTrim(const std::string& str)
+{
+	size_t	start;
+	size_t	end;
+
+	start = 0;
+	end = str.length();
+	while (start < end && std::isspace(str[start]))
+		start++;
+	while (end > start && std::isspace(str[end - 1]))
+		end--;
+	return str.substr(start, end - start);
 }
 //-------------------------------------------------------------------------//
