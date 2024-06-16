@@ -1,5 +1,10 @@
-#include "../inc/Date.hpp"
+#include <cstdlib>
+#include <sstream>
+#include <iomanip>
 #include <string>
+
+#include "../inc/ExceptionMaker.hpp"
+#include "../inc/Date.hpp"
 
 //------------------------------  CANONICAL  ------------------------------//
 Date::Date(void)
@@ -26,32 +31,83 @@ Date::~Date(void)
 //-------------------------------------------------------------------------//
 
 //-----------------------------  CONSTRUCTORS  ----------------------------//
+/*	std::string constructor expects format:
+ *	yyyy-mm-dd
+ *	
+ */
 Date::Date(std::string const& str)
 {
-	std::string::size_type	i;
-	std::string	const 		verbose = "Error: bad date => " + str;
-	std::string				num;
-	char					curr;
-	int						start;
+	std::string	const	verbose = "Error: bad date => " + str;
 
-	start = 0;
+	std::stringstream	ss(str);
+	std::string			number_s;
+	long				numbers[3];
+	char				*end_ptr;
+	int					numbers_i;
+
+	numbers_i = 0;
 	if (charCount('-', str) != 2)
 		throw (ExceptionMaker(verbose));
-	while (str.size() != 0)
+	if (!isNum(*str.begin()) || !isNum(*str.rbegin()))
+		throw (ExceptionMaker(verbose));
+	while(std::getline(ss, number_s, '-'))
 	{
-		for (i = 0; i < str.size(); i++)
-		{
-			curr = str[i];
-			if (!isNum(curr))
-				if (i == 0 || i == str.size() - 1 || curr != '-')
-					throw (ExceptionMaker(verbose));
-			if (curr == '-')
-				break ;
-		}
-		start += i + 1;
-		num = str.substr(start, i);
-
+		numbers[numbers_i++] = strtol(number_s.c_str(), &end_ptr, 10);
+		if (end_ptr == number_s.c_str())
+			throw (ExceptionMaker(verbose));
 	}
+	if (numbers_i != 3)
+		throw (ExceptionMaker(verbose));
+	if (!this->setDateInfo((DateInfo){numbers[0], numbers[1], numbers[2]}))
+		throw (ExceptionMaker(verbose));
+}
+
+Date::Date(DateInfo const& date)
+{
+	if (!this->setDateInfo(date))
+	{
+		std::stringstream	ss;
+
+		ss << "Error: bad date => ";
+		ss << std::setfill('0') << std::setw(4) << date._yy;
+		ss << '-' << std::setw(2) << date._mm;
+		ss << '-' << std::setw(2) << date._dd << std::setfill(' ');
+		throw (ExceptionMaker(ss.str()));
+	}
+}
+//-------------------------------------------------------------------------//
+
+
+//-----------------------------  OP OVERLOADS  ----------------------------//
+bool	Date::operator==(Date const & rhs)	const
+{
+	return (this->_yy == rhs._yy
+			&& this->_mm == rhs._mm
+			&& this->_dd == rhs._dd);
+}
+
+bool	Date::operator>=(Date const & rhs)	const
+{
+	return (!(*this < rhs));
+}
+
+bool	Date::operator<=(Date const & rhs)	const
+{
+	return (*this < rhs || *this == rhs);
+}
+
+bool	Date::operator>(Date const & rhs)	const
+{
+	return (!(*this <= rhs));
+}
+
+bool	Date::operator<(Date const & rhs)	const
+{
+	if (this->_yy != rhs._yy)
+		return (this->_yy < rhs._yy);
+	if (this->_mm != rhs._mm)
+		return (this->_mm < rhs._mm);
+	return (this->_dd < rhs._dd);
 }
 //-------------------------------------------------------------------------//
 
@@ -70,8 +126,39 @@ unsigned short const&	Date::getDay()	const
 {
 	return (this->_dd);
 }
+
+bool	Date::validDateInfo(DateInfo const& date)	const
+{
+	if (date._yy < 0 || date._yy > 15999)
+		return (false);
+	if (date._mm < 1 || date._mm > 12)
+		return (false);
+	if (date._dd < 1 || date._dd > 31)
+		return (false);
+	return (true);
+}
+
+bool	Date::setDateInfo(DateInfo const& date)
+{
+	if (!this->validDateInfo(date))
+		return (false);
+	this->_yy = date._yy;
+	this->_mm = date._mm;
+	this->_dd = date._dd;
+	return (true);
+}
+
 //-------------------------------------------------------------------------//
+
 //-------------------------  NON-MEMBER FUNCTIONS  ------------------------//
+std::ostream &			operator<<(std::ostream & o, Date const& date)
+{
+	o << std::setfill('0') << std::setw(4) << date.getYear();
+	o << '-' << std::setw(2) << date.getMonth();
+	o << '-' << std::setw(2) << date.getDay() << std::setfill(' ');
+	return (o);
+}
+
 bool	isNum(char const& c)
 {
 	return (c >= '0' && c <= '9');

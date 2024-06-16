@@ -48,6 +48,12 @@ void	testHeader(std::ostream &o, std::string name)
 
 int main(void)
 {
-
+	TRY_CATCH_TEST("Unit test for Date type",
+		{
+			Date	yesterday("2024-06-15");
+			Date	today("2024-06-16");
+			Date	tomorrow((DateInfo){2024, 06, 17});
+			std::cout << (yesterday  <= today && today < tomorrow) << std::endl;
+		});
 	return (0);
 }
