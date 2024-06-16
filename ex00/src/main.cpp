@@ -7,8 +7,8 @@ int main(int ac, char **av)
 {
 	if (ac != 2)
 	{
-		std::cerr << CLI_RED << "Usage: ./btc [ input file ]" << '\n';
-		std::cerr << CLI_RESET;
+		std::cout << CLI_RED << "Usage: ./btc [ input file ]" << '\n';
+		std::cout << CLI_RESET;
 		return (1);
 	}
 	try
@@ -20,9 +20,8 @@ int main(int ac, char **av)
 	}
 	catch (ExceptionMaker const& ex)
 	{
-		std::cerr << CLI_RED << ex.what() << '\n' << CLI_RESET;
+		std::cout << CLI_RED << ex.what() << '\n' << CLI_RESET;
 	}
 	std::cout << CLI_RESET;
-	std::cerr << CLI_RESET;
 	return (0);
 }
