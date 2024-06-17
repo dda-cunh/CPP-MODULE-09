@@ -2,7 +2,6 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "../inc/BitcoinExchange.hpp"
 #include "../inc/ExceptionMaker.hpp"
@@ -19,18 +18,24 @@ BitcoinExchange::BitcoinExchange(void)
 		throw (ExceptionMaker("Couldn't open db file"));
 	while (std::getline(dbFile, line))
 	{
-		std::vector<std::string>	colls;
-		std::stringstream			ss;
-		std::string					coll;
-		float						exchange;
-		char						*end_ptr;
+		std::stringstream	ss;
+		std::string			colls[2];
+		std::string			coll;
+		float				exchange;
+		char				*end_ptr;
+		int					colls_i;
 
 		if (line == "date,exchange_rate")
 			continue ;
 		ss << line;
+		colls_i = 0;
 		while (std::getline(ss, coll, ','))
-			colls.push_back(coll);
-		if (colls.size() != 2)
+		{
+			if (colls_i < 2)
+				colls[colls_i] = coll;
+			colls_i++;
+		}
+		if (colls_i != 2)
 			throw (ExceptionMaker("Invalid line on db file"));
 		Date	date(colls[0]);
 		exchange = std::strtof(colls[1].c_str(), &end_ptr);
@@ -69,19 +74,25 @@ float	BitcoinExchange::retrieveRate(Date const& date)	const
 
 void	BitcoinExchange::parseInFileLine(std::string const& line)	const
 {
-	std::vector<std::string>	colls;
-	std::stringstream			ss;
-	std::string					coll;
-	float						converted;
-	float						value;
-	char						*end_ptr;
+	std::stringstream	ss;
+	std::string			colls[2];
+	std::string			coll;
+	float				converted;
+	float				value;
+	char				*end_ptr;
+	int					colls_i;
 
 	if (line == "date | value")
 		return ;
 	ss << line;
+	colls_i = 0;
 	while (std::getline(ss, coll, '|'))
-		colls.push_back(coll);
-	if (colls.size() != 2)
+	{
+		if (colls_i < 2)
+			colls[colls_i] = coll;
+		colls_i++;
+	}
+	if (colls_i != 2)
 		throw (ExceptionMaker("Error: Invalid line on infile"));
 	Date	date(colls[0]);
 	value = std::strtof(colls[1].c_str(), &end_ptr);

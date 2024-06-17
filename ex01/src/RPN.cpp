@@ -1,3 +1,4 @@
+#include <list>
 #include <sstream>
 #include <stack>
 
@@ -26,11 +27,11 @@ RPN::~RPN(void)
 //-------------------------------  MEMBERS  -------------------------------//
 long	RPN::calculate(std::string const& rpn_string)
 {
-	std::stringstream	ss(rpn_string);
-	std::stack<long>	stack;
-	std::string			curr;
-	long				right;
-	long				left;
+	std::stack<long, std::list<long> >	stack;
+	std::stringstream					ss(rpn_string);
+	std::string							curr;
+	long								right;
+	long								left;
 
 	while (std::getline(ss, curr, ' '))
 	{
