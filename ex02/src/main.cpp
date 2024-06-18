@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include "../inc/ExceptionMaker.hpp"
 #include "../inc/PmergeMe.hpp"
@@ -13,10 +14,10 @@ int main(int ac, char **av)
 	}
 	try
 	{
-		RPN	rpn;
+		PmergeMe	sorting(std::vector<std::string>(av + 1, av + ac));
 
 		std::cout << CLI_CYAN;
-		std::cout << rpn.calculate(av[1]) << '\n';
+		//TODO:
 	}
 	catch (ExceptionMaker const& ex)
 	{
