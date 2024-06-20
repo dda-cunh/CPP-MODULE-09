@@ -74,6 +74,8 @@ float	BitcoinExchange::retrieveRate(Date const& date)	const
 
 void	BitcoinExchange::parseInFileLine(std::string const& line)	const
 {
+	Date const			btc_creation("2009-01-03");
+
 	std::stringstream	ss;
 	std::string			colls[2];
 	std::string			coll;
@@ -95,6 +97,8 @@ void	BitcoinExchange::parseInFileLine(std::string const& line)	const
 	if (colls_i != 2)
 		throw (ExceptionMaker("Error: Invalid line on infile"));
 	Date	date(colls[0]);
+	if (date < btc_creation)
+		throw (ExceptionMaker("Error: Date comes before the creation of btc"));
 	value = std::strtof(colls[1].c_str(), &end_ptr);
 	if (end_ptr == colls[1].c_str())
 		throw (ExceptionMaker("Error: Invalid number on infile"));
